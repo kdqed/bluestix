@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone TrackPad</title>
+  
+  <script src="/hammer.min.js"></script>
+  <style>
+    * {box-sizing: border-box;}
+    body {
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 3fr 1fr;
+      background: #404040;
+      grid-gap: 0.5rem;
+    }
+    .pad {
+      grid-column: span 2;
+      width: 100%;
+      background: #101010;
+    }
+    button{
+      outline: none;
+      border: none;
+      background: #101010;
+    }
+  </style>
+  
+  <script>
+    ws = null;
+    mc = null;
+    
+    moveblock = false;
+    scrollblock = false;
+    tripleblock = false;
+    
+    fullscreend = false;
+     
+    function init() {
+      
+      if(!ws){
+        ws = new WebSocket(`ws://${location.hostname}:${location.port}/ws`);
+      }
+      
+      if(!mc){
+        mc = new Hammer.Manager(document.querySelector(".pad"));
+        
+        mc.add(new Hammer.Pan({event: "singlemove", threshold: 5}))
+        mc.on("singlemove", (e) => {
+          if(!moveblock){
+            moveblock = true;
+            ws.send(`move ${e.deltaX} ${e.deltaY}`);
+            setTimeout(()=>{moveblock=false;}, 100);            
+          }
+        });
+        
+        mc.add(new Hammer.Pan({event: "doublemove", threshold: 5, pointers: 2}))
+        mc.on("doublemove", (e) => {
+          if(!scrollblock){
+            scrollblock = true;
+            ws.send(`scroll ${e.deltaX} ${e.deltaY}`);
+            setTimeout(()=>{scrollblock=false;}, 100);            
+          }
+        });
+        
+        mc.add(new Hammer.Pan({event: "triplemove", threshold: 5, pointers: 3}))
+        mc.on("triplemove", (e) => {
+          if(!tripleblock){
+            tripleblock = true;
+            ws.send(`switch ${e.deltaX} ${e.deltaY}`);
+            setTimeout(()=>{tripleblock=false;}, 500);            
+          }
+        });
+        
+        mc.add(new Hammer.Tap({event: "singletap", threshold: 4}))
+        mc.on("singletap", (e) => {
+          ws.send(`click`);
+        });
+        
+        mc.add(new Hammer.Tap({event: "doubletap", threshold: 4, taps: 2}))
+        mc.on("doubletap", (e) => {
+          ws.send(`doubleclick`);
+        });
+        
+        mc.add(new Hammer.Tap({event: "twopointertap", threshold: 4, pointers: 2}))
+        mc.on("twopointertap", (e) => {
+          ws.send(`rightclick`);
+        });
+        
+        
+      }
+      
+    }
+    
+    function leftclick() {
+      if(!fullscreend){
+        document.documentElement.requestFullscreen();
+        fullscreend = true;
+      } else {
+        ws.send("click")
+      }
+    }
+    function rightclick() {
+      ws.send("rightclick")
+    }
+  </script>
+</head>
+<body onload="init()">
+  <div class="pad"></div>
+  <button onclick="leftclick()"></button>
+  <button onclick="rightclick()"></button>
+</body>
+</html>

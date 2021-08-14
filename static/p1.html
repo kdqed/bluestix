@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <title>P1</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
+  <style>
+    * {box-sizing: border-box;}
+    body{ 
+      background: #0e0516; 
+      width: 100%; 
+      height: 100vh; 
+      padding: 0; 
+      margin: 0;
+      display: grid;
+      align-items: end;
+      grid-template-columns: 1fr 1fr;
+      justify-content: space-between;
+    }   
+    svg {
+      width: 100%;
+    }
+  </style>
+  <script>
+    ws = null;
+    fullscreen = false;
+    function init() {
+      ws = new WebSocket(`ws://${location.hostname}:${location.port}/ws`);
+      
+    }
+    function sendPress(t){
+      ws.send("p "+t);
+    }
+    function sendRelease(t){
+      ws.send("r "+t);
+    }
+  </script>
+</head>
+<body onload="init()">
+  <svg viewBox="0 0 500 500">
+    <text x="245" y="75" style="fill: #fff; font: bold 20px sans-serif;">
+      P1
+    </text>
+    <polygon ontouchstart="sendPress('up')" ontouchend="sendRelease('up')"
+      points="175,100 325,100 250,225"
+      style="fill: #fff;" />
+    <polygon ontouchstart="sendPress('up right')" ontouchend="sendRelease('up right')"
+      points="400,50 450,100 275,225"
+      style="fill: #ffffff80;" />  
+    <polygon ontouchstart="sendPress('right')" ontouchend="sendRelease('right')"
+      points="400,175 400,325 275,250"
+      style="fill: #fff;" />
+    <polygon ontouchstart="sendPress('down right')" ontouchend="sendRelease('down right')"
+      points="400,450 450,400 275,275"
+      style="fill: #ffffff80;" />  
+    <polygon ontouchstart="sendPress('down')" ontouchend="sendRelease('down')"
+      points="175,400 325,400 250,275"
+      style="fill: #fff;" />
+    <polygon ontouchstart="sendPress('down left')" ontouchend="sendRelease('down left')"
+      points="100,450 50,400 225,275"
+      style="fill: #ffffff80;" />  
+    <polygon ontouchstart="sendPress('left')" ontouchend="sendRelease('left')"
+      points="100,175 100,325 225,250"
+      style="fill: #fff;" />
+    <polygon ontouchstart="sendPress('up left')" ontouchend="sendRelease('up left')"
+      points="100,50 50,100 225,225"
+      style="fill: #ffffff80;" />     
+  </svg>
+  <svg viewBox="0 0 500 500">
+    <rect ontouchstart="sendPress('m')" ontouchend="sendRelease('m')"
+      x="50" y="50" width="125" height="100" style="fill: #fff;" />
+    <rect ontouchstart="sendPress('m n')" ontouchend="sendRelease('m n')"
+      x="200" y="50" width="100" height="100" style="fill: #ffffff80;" />  
+    <rect ontouchstart="sendPress('n')" ontouchend="sendRelease('n')"
+      x="325" y="50" width="125" height="100" style="fill: #fff;" />
+    <rect ontouchstart="sendPress('m b')" ontouchend="sendRelease('m b')"
+      x="50" y="200" width="125" height="100" style="fill: #ffffff80;" />
+    <rect ontouchstart="sendPress('b n m')" ontouchend="sendRelease('b n m')"
+      x="200" y="200" width="100" height="100" style="fill: #ffffff80b;" />
+    <rect ontouchstart="sendPress('n b')" ontouchend="sendRelease('n b')"
+      x="325" y="200" width="125" height="100" style="fill: #ffffff80;" /> 
+    <rect ontouchstart="sendPress('b')" ontouchend="sendRelease('b')"
+      x="50" y="350" width="400" height="100" style="fill: #fff;" />    
+  </svg>
+</body>
+</html>
